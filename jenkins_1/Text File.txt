@@ -1,0 +1,37 @@
+
+
+
+STEP 1
+aws iam create-role --role-name S3ReadRole --assume-role-policy-document file://trust-policy.json
+aws iam put-role-policy --role-name S3ReadRole --policy-name S3-Read-Policy --policy-document file://s3-read-policy.json
+
+STEP 2
+
+aws iam create-instance-profile --instance-profile-name S3ReadProfile
+aws iam add-role-to-instance-profile --instance-profile-name S3ReadProfile --role-name S3ReadRole
+
+STEP 3
+aws ec2 run-instances --image-id ami-053b0d53c279acc90 --instance-type t2.micro --iam-instance-profile Name=S3ReadProfile --count 1 --key-name euast-us1-keypair --region us-east-1
+
+
+
+
+
+STEP 4
+
+aws s3api create-bucket --bucket testbucketforfilefromec2 --region us-east-1
+
+STEP 5
+echo "Hello World from S3" > hello-world.txt
+aws s3 cp hello-world.txt s3://testbucketforfilefromec2/hello-world.txt
+
+
+STEP 6 - connect to the instance 
+sudo apt-get update
+sudo apt-get install python3-pip
+pip3 install boto3
+
+
+
+
+
